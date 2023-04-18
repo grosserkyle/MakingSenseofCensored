@@ -195,6 +195,21 @@ Information section [here](https://doi.org/10.1002/bimj.201700090).
 
 #### Single imputation
 
+``` r
+# Impute censored values of X with conditional mean imputation based on a Cox proportional hazards model for X | Z
+# Impute with E(X | X > C, Z)
+
+## Fit a Cox proportional hazards model (i.e., the imputation model) for X ~ Z 
+imputation_model <- survival::coxph(formula = survival::Surv(time = W, event = Delta) ~ Z, data = random_right_dat)
+
+## Impute censored X in random_right_dat
+imputation_data <- imputeCensoRd::condl_mean_impute(fit = imputation_model, data = random_right_dat,
+                                                    obs = "W", event = "Delta", addl_covar = "Z", approx_beyond = "expo")
+                                                    
+## Fit linear model using imputed values of X
+fit_imputed = lm(Y ~ imp + Z, data = imputation_data)
+```
+
 #### Multiple imputation
 
 ### SECTION 8: MAXIMUM LIKELIHOOD ESTIMATION (MLE)
